@@ -55,16 +55,103 @@ void parse_file ( char * filename,
 
   FILE *f;
   char line[256];
+  struct matrix * temporary;
   clear_screen(s);
+   color c;
+   c.green=0;
+   c.red=255;
+   c.blue=0;
 
   if ( strcmp(filename, "stdin") == 0 ) 
     f = stdin;
   else
     f = fopen(filename, "r");
-  
   while ( fgets(line, 255, f) != NULL ) {
-    line[strlen(line)-1]='\0';
+    if (line[strlen(line)-1]=='\n') line[strlen(line)-1]='\0';
     printf(":%s:\n",line);
+    
+    if(!strcmp(line, "line")){
+      fgets(line,255,f);
+      double x0=0;
+      double x1=0;
+      double y0=0;
+      double y1=0;
+      double z0=0;
+      double z1=0;
+      if (line[strlen(line)-1]=='\n'){
+	line[strlen(line)-1]='\0';
+      }
+      sscanf(line,"%lf %lf %lf %lf %lf %lf",&x0,&y0,&z0,&x1,&y1,&z1);
+      add_edge(edges,x0,y0,z0,x1,y1,z1);
+    }
+    else if (!strcmp(line,"quit")) {
+      exit(0);
+    }
+    else if (!strcmp(line,"apply")) {
+      matrix_mult(transform,edges);
+    }
+    else if (!strcmp(line,"save")) {
+      fgets(line,255,f);
+      if (line[strlen(line)-1]=='\n'){
+	line[strlen(line)-1]='\0';
+      }
+      clear_screen(s);
+      draw_lines(edges,s,c);
+      save_extension(s,line);
+    }
+    else if (!strcmp(line,"display")) {
+      clear_screen(s);
+      draw_lines(edges,s,c);
+      display(s);
+    } 
+    else if(!strcmp(line, "ident")){
+      ident(transform);
+    }
+    else if (!strcmp(line,"scale")) {
+      fgets(line,255,f);
+      if (line[strlen(line)-1]=='\n'){
+	line[strlen(line)-1]='\0';
+      }
+      double scalex=0;
+      double scaley=0;
+      double scalez=0;
+      sscanf(line,"%lf %lf %lf",&scalex,&scaley,&scalez);
+      temporary = make_scale(scalex,scaley,scalez);
+      matrix_mult(tempprary,transform);
+      free_matrix(temporary);
+    }
+    else if (!strcmp(line,"move")) {
+      fgets(line,255,f);
+      if (line[strlen(line)-1]=='\n'){
+	line[strlen(line)-1]='\0';
+      }
+      double tranx=0;
+      double trany=0;
+      double tranz=0;
+      sscanf(line,"%lf %lf %lf",&tranx,&trany,&tranz);
+      temporary=make_translate(tranx,trany,tranz);
+      matrix_mult(temporary,transform);
+      free_matrix(temporary);
+    }
+    else if (!strcmp(line,"rotate")) {
+      char xyz[2];
+      double theta;
+      fgets(line,255,f);
+      if (line[strlen(line)-1]=='\n'){
+	line[strlen(line)-1]='\0';
+      }
+      sscanf(line,"%s %lf",xyz,&theta);
+      if (xyz[0]=='x') {
+	temporary=make_rotX(theta);
+      }
+      if (xyz[0]=='y') {
+	temporary=make_rotY(theta);
+      }
+      if (xyz[0]=='z') {
+	temporary=make_rotZ(theta);
+      }
+      matrix_mult(temporary,transform);
+      free_matrix(temporary);
+    }
   }
 }
-  
