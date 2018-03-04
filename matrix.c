@@ -13,7 +13,12 @@ Returns: The translation matrix created using x, y and z
 as the translation offsets.
 ====================*/
 struct matrix * make_translate(double x, double y, double z) {
-  return NULL;
+  struct matrix * final = new_matrix(4,4);
+  ident(final);
+  final->m[0][3] = x;
+  final->m[1][3] = y;
+  final->m[2][3] = z;
+  return final;
 }
 
 /*======== struct matrix * make_scale() ==========
@@ -24,7 +29,12 @@ Returns: The translation matrix creates using x, y and z
 as the scale factors
 ====================*/
 struct matrix * make_scale(double x, double y, double z) {
-  return NULL;
+  struct matrix * final = new_matrix(4,4);
+  ident(final);
+  final->m[0][0] = x;
+  final->m[1][1] = y;
+  final->m[2][2] = z;
+  return final;
 }
 
 /*======== struct matrix * make_rotX() ==========
@@ -33,7 +43,14 @@ Returns: The rotation matrix created using theta as the
 angle of rotation and X as the axis of rotation.
 ====================*/
 struct matrix * make_rotX(double theta) {
-  return NULL;
+  theta=theta*M_PI/180;
+  struct matrix * final = new_matrix(4,4);
+  ident(final);
+  final->m[1][1] = cos(theta);
+  final->m[2][2] = cos(theta);
+  final->m[1][2] = -sin(theta);
+  final->m[2][1] = sin(theta);
+  return final;
 }
 
 /*======== struct matrix * make_rotY() ==========
@@ -43,7 +60,14 @@ Returns: The rotation matrix created using theta as the
 angle of rotation and Y as the axis of rotation.
 ====================*/
 struct matrix * make_rotY(double theta) {
-  return NULL;
+  theta=theta*M_PI/180;
+  struct matrix * final = new_matrix(4,4);
+  ident(final);
+  final->m[0][0] = cos(theta);
+  final->m[0][2] = sin(theta);
+  final->m[2][0] = -sin(theta);
+  final->m[2][2] = cos(theta);
+  return final;
 }
 
 /*======== struct matrix * make_rotZ() ==========
@@ -53,7 +77,14 @@ Returns: The rotation matrix created using theta as the
 angle of rotation and Z as the axis of rotation.
 ====================*/
 struct matrix * make_rotZ(double theta) {
-  return NULL;
+ theta=theta*M_PI/180;
+ struct matrix * final = new_matrix(4,4);
+ ident(final);
+ final->m[0][0] = cos(theta);
+ final->m[0][1] = -sin(theta);
+ final->m[1][0] = sin(theta);
+ final->m[1][1] = cos(theta);
+ return final;
 }
 
 
@@ -63,7 +94,6 @@ Returns:
 print the matrix
 */
 void print_matrix(struct matrix *m) {
-
   int r, c;
   for (r=0; r < m->rows; r++) {
     for (c=0; c < m->lastcol; c++) 
@@ -78,8 +108,7 @@ Returns:
 turns m in to an identity matrix
 */
 void ident(struct matrix *m) {
-  int r, c;
-  
+  int r, c; 
   for (r=0; r < m->rows; r++) 
     for (c=0; c < m->cols; c++) 
       if ( r == c )
