@@ -117,7 +117,7 @@ void parse_file ( char * filename,
       double scalez=0;
       sscanf(line,"%lf %lf %lf",&scalex,&scaley,&scalez);
       temporary = make_scale(scalex,scaley,scalez);
-      matrix_mult(tempprary,transform);
+      matrix_mult(temporary,transform);
       free_matrix(temporary);
     }
     else if (!strcmp(line,"move")) {
